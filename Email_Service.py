@@ -108,12 +108,23 @@ def generate_email(input_file):
     try:
         server.users().messages().send(userId="me", body=msg_raw).execute()
         popup('Email sent successfully!')
+        with open("./success.txt", 'w') as f:
+            f.close()
+
     except server.SMTPAuthenticationError:
         popup('ERROR: Email failed to send')
+        with open("./fail.txt", 'w') as f:
+            f.close()
+
     except server.SMTPDataError:
         popup('ERROR: Issue with message data')
+        with open("./fail.txt", 'w') as f:
+            f.close()
+
     except server.SMTPSenderRefused:
         popup('ERROR: Recipient email is invalid')
+        with open("./fail.txt", 'w') as f:
+            f.close()
 
 
 def email_service():
