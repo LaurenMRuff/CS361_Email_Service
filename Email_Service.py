@@ -105,26 +105,28 @@ def generate_email(input_file):
 
     msg_raw = {'raw': base64.urlsafe_b64encode(email.as_string().encode()).decode()}
 
+    file_path = os.environ["USERPROFILE"] + '\\Desktop' + "\\email_service_data\\"
+
     try:
         server.users().messages().send(userId="me", body=msg_raw).execute()
         popup('Email sent successfully!')
-        with open("./success.txt", 'w') as f:
-            f.close()
+        f = open(file_path + "success.txt", 'w')
+        f.close()
 
     except server.SMTPAuthenticationError:
         popup('ERROR: Email failed to send')
-        with open("./fail.txt", 'w') as f:
-            f.close()
+        f = open(file_path + "fail.txt", 'w')
+        f.close()
 
     except server.SMTPDataError:
         popup('ERROR: Issue with message data')
-        with open("./fail.txt", 'w') as f:
-            f.close()
+        f = open(file_path + "fail.txt", 'w')
+        f.close()
 
     except server.SMTPSenderRefused:
         popup('ERROR: Recipient email is invalid')
-        with open("./fail.txt", 'w') as f:
-            f.close()
+        f = open(file_path + "fail.txt", 'w')
+        f.close()
 
 
 def email_service():
