@@ -21,6 +21,7 @@ import pickle
 from googleapiclient.discovery import build
 from google_auth_oauthlib.flow import InstalledAppFlow
 from google.auth.transport.requests import Request
+import platform
 
 
 def popup(msg):
@@ -69,7 +70,7 @@ def connect_to_gmail(s):
     return service
 
 
-def generate_email(input_file):
+def generate_email(input_file, dir_path, slash):
 
     # open the text file and process it
     with open(input_file) as f:
@@ -105,28 +106,41 @@ def generate_email(input_file):
 
     msg_raw = {'raw': base64.urlsafe_b64encode(email.as_string().encode()).decode()}
 
-    file_path = os.environ["USERPROFILE"] + '\\Desktop' + "\\email_service_data\\"
-
     try:
         server.users().messages().send(userId="me", body=msg_raw).execute()
         popup('Email sent successfully!')
-        f = open(file_path + "success.txt", 'w')
+        f = open(dir_path + slash + "success.txt", 'w')
         f.close()
 
     except server.SMTPAuthenticationError:
         popup('ERROR: Email failed to send')
-        f = open(file_path + "fail.txt", 'w')
+        f = open(dir_path + slash + "fail.txt", 'w')
         f.close()
 
     except server.SMTPDataError:
         popup('ERROR: Issue with message data')
-        f = open(file_path + "fail.txt", 'w')
+        f = open(dir_path + slash + "fail.txt", 'w')
         f.close()
 
     except server.SMTPSenderRefused:
         popup('ERROR: Recipient email is invalid')
-        f = open(file_path + "fail.txt", 'w')
+        f = open(dir_path + slash + "fail.txt", 'w')
         f.close()
+
+
+def get_system():
+
+    local_dir = ''
+    slash = ''
+
+    if platform.system() == "Darwin":  # for Mac
+        local_dir = os.environ['USERPROFILE'] + '/Desktop/email_service_data'
+        slash = '/'
+    elif platform.system() == "Windows":
+        local_dir = os.environ['USERPROFILE'] + '\\Desktop\\email_service_data'
+        slash = '\\'
+
+    return local_dir, slash
 
 
 def email_service():
@@ -135,11 +149,9 @@ def email_service():
     # DATE: February 26, 2022
     # SOURCE : https://stackoverflow.com/questions/21746750/check-and-wait-until-a-file-exists-to-read-it
 
-    # get user's C drive path
-    env = os.environ['USERPROFILE']
+    dir_path, slash = get_system()
 
-    # get the absolute file path
-    file_path = env + '\\Desktop' + "\\email_service_data\\email_data.txt"
+    file_path = dir_path + slash + "email_data.txt"
 
     while True:
         # wait for the file to exist
@@ -148,7 +160,7 @@ def email_service():
 
         # if it is the file we are looking for, process it. Otherwise, print an error and exit
         if os.path.isfile(file_path):
-            generate_email(file_path)
+            generate_email(file_path, dir_path, slash)
 
         else:
             popup("email_data.txt was an invalid file.")
