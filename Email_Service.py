@@ -128,18 +128,19 @@ def email_service():
     # get the absolute file path
     file_path = env + '\\Desktop' + "\\email_service_data\\email_data.txt"
 
-    # wait for the file to exist
-    while not os.path.exists(file_path):
-        time.sleep(1)
+    while True:
+        # wait for the file to exist
+        while not os.path.exists(file_path):
+            time.sleep(1)
 
-    # if it is the file we are looking for, process it. Otherwise, print an error and exit
-    if os.path.isfile(file_path):
-        generate_email(file_path)
+        # if it is the file we are looking for, process it. Otherwise, print an error and exit
+        if os.path.isfile(file_path):
+            generate_email(file_path)
 
-    else:
-        popup("email_data.txt was an invalid file.")
+        else:
+            popup("email_data.txt was an invalid file.")
 
-    os.remove(file_path)
+        os.remove(file_path)
 
 
 if __name__ == "__main__":
