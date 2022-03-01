@@ -4,6 +4,9 @@
 ### Overview of this Microservice
 This email service uses OAuth 2.0 to send emails from a gmail account to a recipient<br>
 <br>
+Run the following from the command line to install the necessary libs for OAuth2:<br>
+pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
+<br><br>
 This code looks for a text file in the location "C:[USER]/Desktop/email_service_data/email_data.txt"<br>
 <br>
 At this point, if the email_data.txt file is found it is deleted (even if it was not successfully read) and a fail.txt or success.txt file is added to the folder in its place.<br>
