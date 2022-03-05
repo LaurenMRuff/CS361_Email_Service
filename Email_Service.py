@@ -134,7 +134,7 @@ def get_system():
     slash = ''
 
     if platform.system() == "Darwin":  # for Mac
-        local_dir = os.environ['USERPROFILE'] + '/Desktop/email_service_data'
+        local_dir = os.environ['HOME'] + '/Desktop/email_service_data'
         slash = '/'
     elif platform.system() == "Windows":
         local_dir = os.environ['USERPROFILE'] + '\\Desktop\\email_service_data'
