@@ -127,9 +127,6 @@ def generate_email(input_file, dir_path, slash):
                 f.write(line)
         f.close()
 
-        # if successful, delete the email_service.txt file
-        os.remove(input_file)
-
     except server.SMTPAuthenticationError:
         popup('ERROR: Email failed to send')
         f = open(dir_path + slash + "fail.txt", 'w')
@@ -171,17 +168,25 @@ def email_service():
 
     file_path = dir_path + slash + "email_data.txt"
 
+    sleepTime = 3
+
     while True:
-        # wait for the file to exist
-        while not os.path.exists(file_path):
-            time.sleep(1)
+
+        # get the current time
+        timeNow = time.time()
 
         # if it is the file we are looking for, process it. Otherwise, print an error and exit
-        if os.path.isfile(file_path):
-            generate_email(file_path, dir_path, slash)
+        if os.path.exists(file_path) and os.path.isfile(file_path):
+            # get the time since epoch for the last time the file was modified
+            lastTimeSent = os.path.getmtime(file_path)
+            if lastTimeSent > timeNow - sleepTime:
+                # if the file is less than 3 seconds old, the email will be sent
+                generate_email(file_path, dir_path, slash)
 
         else:
             popup("email_data.txt was an invalid file.")
+
+        time.sleep(sleepTime)
 
 
 if __name__ == "__main__":
