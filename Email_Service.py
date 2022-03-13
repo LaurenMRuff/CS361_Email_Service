@@ -105,9 +105,9 @@ def generate_email(input_file, dir_path, slash):
     if len(attachment) > 0:
         try:
             with open(attachment, 'rb') as img_f:
-                img_data = img_f.read()
+                image_to_attach = MIMEImage(img_f.read(), name=os.path.basename(attachment))
                 img_f.close()
-            email.attach(MIMEImage(img_data))
+            email.attach(image_to_attach)
         except FileNotFoundError:
             popup("ERROR: File could not be found. File will not be attached to email.")
 
