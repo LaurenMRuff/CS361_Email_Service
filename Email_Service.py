@@ -1,8 +1,8 @@
 # AUTHOR: Lauren Ruff
 # Email: ruffl@oregonstate.edu
-# Assignment: 8, Integration
-# Due Date: February 28, 2022
-# Version: 1.0
+# Assignment: 10, Portfolio
+# Due Date: March 18, 2022
+# Version: 2.0
 # File: Email_Service.py
 # Description: This is an email microservice created for Ethan's Project and also used for Lauren's project. It will
 #              allow the user to send an email using content from a text file. It is required that the email comes from
@@ -27,7 +27,10 @@ from datetime import datetime
 
 
 def popup(msg):
-    # popup window to tell user password was incorrect
+    """
+    this is a popup message gui that shows the passed message to the user
+    :param msg: message to be shown in the popup
+    """
     popup_wind = tk.Tk()
     popup_wind.geometry("400x50")
     popup_wind.eval('tk::PlaceWindow . center')
@@ -39,6 +42,11 @@ def popup(msg):
 
 
 def connect_to_gmail(s):
+    """
+    uses oauth2 to connect to gmail securely
+    :param s: the senders email
+    :return: the authorized connection to gmail
+    """
     # COMMENT: Using smtp to log in to gmail code adapted from code found at link
     # DATE: February 25, 2022
     # SOURCE: https://docs.python.org/3/library/email.examples.html
@@ -80,7 +88,12 @@ def connect_to_gmail(s):
 
 
 def generate_email(input_file, dir_path, slash):
-
+    """
+    This method parses the text file, then generates and sends the email with the contents of the text file
+    :param input_file: location of the file with the email data
+    :param dir_path: path to the directory of this application
+    :param slash: direction of the file structure slashes in relation to the operating system
+    """
     # open the text file and process it
     with open(input_file) as f:
         lines = f.readlines()
@@ -103,6 +116,7 @@ def generate_email(input_file, dir_path, slash):
     email.attach(message_alt)
 
     if len(attachment) > 0:
+        # if there is an attachment, add it
         try:
             with open(attachment, 'rb') as img_f:
                 image_to_attach = MIMEImage(img_f.read(), name=os.path.basename(attachment))
@@ -113,6 +127,7 @@ def generate_email(input_file, dir_path, slash):
 
     server = connect_to_gmail(sender)
 
+    # generate the raw message
     msg_raw = {'raw': base64.urlsafe_b64encode(email.as_string().encode()).decode()}
 
     try:
@@ -127,6 +142,7 @@ def generate_email(input_file, dir_path, slash):
                 f.write(line)
         f.close()
 
+    # all possible errors
     except server.SMTPAuthenticationError:
         popup('ERROR: Email failed to send')
         f = open(dir_path + slash + "fail.txt", 'w')
@@ -144,14 +160,18 @@ def generate_email(input_file, dir_path, slash):
 
 
 def get_system():
-
+    """
+    This method checks for the operating system on the source computer to appropriately structure files
+    Works for Windows and Mac
+    :return: the local directory, and slash direction
+    """
     local_dir = ''
     slash = ''
 
     if platform.system() == "Darwin":  # for Mac
         local_dir = os.environ['HOME'] + '/Desktop/email_service_data'
         slash = '/'
-    elif platform.system() == "Windows": # for windows
+    elif platform.system() == "Windows":  # for windows
         local_dir = os.environ['USERPROFILE'] + '\\Desktop\\email_service_data'
         slash = '\\'
 
@@ -159,6 +179,11 @@ def get_system():
 
 
 def email_service():
+    """
+    main method for starting the email service
+    gets the system and file path to the file it is looking for with the email data
+    checks for a new file, creates a new email if the file is less than 3 seconds old
+    """
 
     # COMMENT: code for waiting for a file to exist copied from source link
     # DATE: February 26, 2022
